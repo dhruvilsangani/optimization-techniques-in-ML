@@ -10,43 +10,42 @@ def cost(m, t0, t1, x, y):
 	return 1/(2*m) * sum([(t0 + t1* np.asarray([x[i]]) - y[i])**2 for i in range(m)])
 
 
-def gradient_descent(learning_rate, x, y, iterations):
-	#initialize theta
-	t0 = 0
-	t1 = 0
-
+def gradient_descent(lr, x, y, iterations):
+	#initialize variables
+	cache0, cache1, eps = 0,0,0.000001
+	t0,t1 = 0, 0
+	loss = np.empty(iterations)
+	
 	#number of examples
 	m = x.shape[0]
 
-	#total error
+	#error
 	J = cost(m, t0, t1, x, y)
-	cache0, cache1, eps = 0,0,0.000001
-	loss = np.empty(iterations)
 	count = [i for i in range(1, iterations+1)]
-
-	for it in range(iterations):
+	
+	for iteration in range(iterations):
 		#Calculating the gradients
 		grad0 = 1/m * sum([(t0 + t1*np.asarray([x[i]]) - y[i]) for i in range(m)]) 
 		grad1 = 1/m * sum([(t0 + t1*np.asarray([x[i]]) - y[i])*np.asarray([x[i]]) for i in range(m)])
 		#Updating the parameters
 		cache0 += grad0**2
 		cache1 += grad1**2
-		t0 = t0 - (learning_rate * grad0)/(np.sqrt(cache0 + eps))
-		t1 = t1 - (learning_rate * grad1)/(np.sqrt(cache1 + eps))
-		loss[it] = cost(m, t0, t1, x, y)
-
+		t0 = t0 - (lr * grad0)/(np.sqrt(cache0 + eps))
+		t1 = t1 - (lr * grad1)/(np.sqrt(cache1 + eps))
+		loss[iteration] = cost(m, t0, t1, x, y)
+		#if iteration%1000==0:
+		#	print(grad1[0])
 	return count, loss, t0, t1
 
 
-#Implementation
+lr = 1
+max_iter = 50000
 
-alpha = 0.01
-max_iter = 10000
-
-count, loss, theta0, theta1 = gradient_descent(alpha, x, y, max_iter)
+count, loss, theta0, theta1 = gradient_descent(lr, x, y, max_iter)
 
 print('theta0 = ' + str(theta0))
 print('theta1 = ' + str(theta1))
+
 
 plt.figure(0)
 plt.scatter(x, y, c = 'red')
